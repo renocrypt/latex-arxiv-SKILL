@@ -1,6 +1,9 @@
-# LaTeX Template for ML/AI Research Papers
+# Agent-Friendly LaTeX Template for arXiv ML/AI Review Papers
 
-This repository contains LaTeX templates specifically designed for machine learning and artificial intelligence research papers intended for submission to arXiv.org using the IEEE conference format.
+English · [简体中文](README.zh-CN.md)
+
+> [!NOTE]
+> An IEEEtran (conference) LaTeX template for ML/AI review papers on arXiv, optimized for agentic IDE workflows (e.g., Cursor, Augment).
 
 ## Template Overview
 
@@ -10,6 +13,39 @@ The template consists of two main files:
 2. `references.template.bib` - The BibTeX references template
 
 These templates are optimized for AI agent understanding and generation, with clear section demarcations, explicit instructions, and comprehensive commenting.
+
+## Quickstart
+
+> [!TIP]
+> Recommended: create working copies and compile `main.tex` (leave the `*.template.*` files untouched).
+
+1. Create working files:
+
+   ```bash
+   cp main.template.tex main.tex
+   cp references.template.bib references.bib
+   ```
+
+2. Compile (recommended: `latexmk`):
+
+   ```bash
+   latexmk -pdf -interaction=nonstopmode -halt-on-error main.tex
+   ```
+
+3. Output: `main.pdf`
+
+> [!NOTE]
+> No `latexmk`? Use the manual sequence:
+>
+> ```bash
+> pdflatex main.tex
+> bibtex main
+> pdflatex main.tex
+> pdflatex main.tex
+> ```
+
+> [!IMPORTANT]
+> The template uses `\bibliography{references}`, so your BibTeX file should be named `references.bib` (or change the `\bibliography{...}` name to match).
 
 ## For AI Agents: How to Use This Template
 
