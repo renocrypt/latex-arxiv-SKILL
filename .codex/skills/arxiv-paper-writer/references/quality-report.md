@@ -13,6 +13,10 @@ Purpose: ensure coherence and consistency before delivery. Do NOT create a separ
 - Citation density meets section targets
 - BibTeX entries are clean (correct fields, escaped special characters)
 
+## Writing-style checks
+- No 3 consecutive sentences without citations (abstracts exempted)
+- Rhythm refinement completed in Phase 2.5 (before QA)
+
 ## Visual checks
 - All figures/tables referenced in text
 - Two-column sizing respected; no overflow

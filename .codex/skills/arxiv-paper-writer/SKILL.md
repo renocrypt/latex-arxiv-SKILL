@@ -66,10 +66,8 @@ metadata:
 5. Create a **framework skeleton** in `main.tex`
    (section headings + 2-4 bullets per section + seed citations; **no prose**).
 6. Update the plan file to reflect the framework, proposed titles, and section/subsection plan.
-7. Compile early to surface LaTeX errors:
-   `python3 scripts/compile_paper.py --project-dir <paper_dir>`
-   - To count main-text pages (excluding references), run with `--report-page-counts` and add a bibliography-start label in `main.tex` (recommended: `\AddToHook{env/thebibliography/begin}{\label{ReferencesStart}}`).
-   - After compiling, scan `main.log` for `Overfull \hbox` warnings and fix them (e.g., switch to `figure*`/`table*` for wide content, size to `\textwidth` instead of `\columnwidth`, or adjust table column widths / `\tabcolsep`).
+7. Compile early: `python3 scripts/compile_paper.py --project-dir <paper_dir>`
+   Fix any `Overfull \hbox` warnings (see Layout Hygiene below).
 8. Return to user:
     - Proposed outline (5-8 sections, 2-4 bullets each)
     - Planned visualizations (5+) mapped to sections (see `references/visual-templates.md`)
@@ -97,21 +95,19 @@ For each writing issue in the CSV:
    (see `references/writing-style.md`).
    For section intent and structure, use `references/template-usage.md`.
 3. **Visualize**: Match content triggers (see `references/visual-templates.md`).
-   Prioritize two-column sizing; use double-column spans only when necessary to avoid overflow.
-   - Plots/diagrams: start with `figure` + `width=\columnwidth`; switch to `figure*` + `width=\textwidth` if labels/legends or content density won’t fit.
-   - Tables: start with `table` sized to `\columnwidth`; switch to `table*` when column count/headers/notes don’t fit. Prefer tuning `p{...}` widths / `\tabcolsep` over `\resizebox` (last resort).
-   - Long equations: prefer line-breaking (`split`, `multline`, `aligned`, `IEEEeqnarray`); if still too wide, use a two-column span (e.g., `strip` from `cuted`, if available) rather than shrinking illegibly.
-   If a figure includes externally sourced content (nodes, labels, data), add in-text citations.
+   Prioritize single-column sizing; use double-column spans only when necessary (see Layout Hygiene).
+   Cite externally sourced figure content.
 4. **Verify**: Web search + open source page (and PDF if available) before adding to `ref.bib`.
    For arXiv entries, append BibTeX via `python3 scripts/arxiv_registry.py --project-dir <paper_dir> export-bibtex <arxiv_id> --out-bib <paper_dir>/ref.bib`.
 5. **Update**: Mark issue `DONE` with `Verified_Citations` count.
-6. Compile after meaningful changes to catch LaTeX errors early.
-   - Treat `Overfull \hbox` warnings as a layout bug to fix before marking an issue `DONE`.
+6. Compile after meaningful changes; fix `Overfull \hbox` before marking `DONE`.
+
+### Phase 2.5: Rhythm Refinement
+After all writing issues are `DONE`, refine prose section-by-section using the `latex-rhythm-refiner` skill. This step varies sentence/paragraph lengths and removes filler phrases while preserving all citations.
 
 ### Phase 3: QA Gate
 1. Run internal QA checklist (see `references/quality-report.md`).
-2. Compile the paper and resolve errors.
-   - Ensure there are no `Overfull \hbox` warnings in the final `main.log`.
+2. Compile; ensure no `Overfull \hbox` warnings in `main.log`.
 3. Deliver `main.tex`, `ref.bib`, figures, and `main.pdf`.
 
 ---
@@ -134,15 +130,9 @@ python3 scripts/create_paper_plan.py --topic "<topic>" --stage issues --timestam
 
 ---
 
-## Verification & Success Criteria
+## Success Criteria
 
-**Compilation**:
-```bash
-pdflatex main.tex && bibtex main && pdflatex main.tex && pdflatex main.tex
-```
-- Exit 0, no "Citation undefined" warnings, page count within limit.
-- Alternative: `python3 scripts/compile_paper.py --project-dir <paper_dir>`
-- Main-text page count (excluding references): `python3 scripts/compile_paper.py --project-dir <paper_dir> --report-page-counts` (requires a bibliography-start label; default `ReferencesStart`; use "Main text pages (exclude ref-start page)").
+**Compilation**: `python3 scripts/compile_paper.py --project-dir <paper_dir>` (exit 0, no "Citation undefined" warnings). Use `--report-page-counts` for main-text page count.
 
 **Quality Metrics**:
 - 6-10 pages of main text (references excluded)
@@ -162,30 +152,19 @@ pdflatex main.tex && bibtex main && pdflatex main.tex && pdflatex main.tex
 - **Issues CSV** is the contract; mark `DONE` only when criteria met.
 - **No submission bundles** unless user requests.
 
----
-
-## Manual Script Usage (advanced)
-For finer control than `bootstrap_ieee_review_paper.py`:
-```bash
-# Plan only
-python3 scripts/create_paper_plan.py --topic "<topic>" --stage plan --output-dir "<paper_dir>"
-# Issues only (after approval)
-python3 scripts/create_paper_plan.py --topic "<topic>" --stage issues --timestamp "<TS>" --slug "<slug>" --output-dir "<paper_dir>" --with-literature-notes
-```
+## Layout Hygiene
+Fix `Overfull \hbox` warnings before marking issues `DONE`:
+- Figures: start with `figure` + `\columnwidth`; switch to `figure*` + `\textwidth` if needed
+- Tables: prefer `p{...}` column widths / `\tabcolsep` over `\resizebox`
+- Equations: use `split`, `multline`, `aligned`, or `IEEEeqnarray` for line-breaking
 
 ---
 
-## Issues CSV Schema (default template)
+## Issues CSV Schema
 | Phase | Issues |
 |-------|--------|
 | Research | Rx: discovery, scaffolding, framework, viz planning |
 | Writing | Wx: each section with target citations and visualization |
 | QA | Qx: citation verification, QA checklist, compilation, final review |
 
-Status flow: `TODO` -> `DOING` -> `DONE`
-
-Validate with: `python3 scripts/validate_paper_issues.py <csv>`
-
-> Note: Paper-specific schema (Phase, Target_Citations, Verified_Citations, Visualization);
-> use `validate_paper_issues.py` as source of truth.
-> Add or remove section rows as needed; keep IDs consistent.
+Status: `TODO` → `DOING` → `DONE`. Schema validated by `validate_paper_issues.py`.
